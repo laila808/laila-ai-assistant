@@ -1,1 +1,37 @@
+<script>
+    async function sendMessage() {
+        const input = document.getElementById('input');
+        const chat = document.getElementById('chat');
+        const message = input.value.trim();
 
+        if (!message) return; // عدم إرسال رسالة فارغة
+
+        chat.innerHTML += `<div><strong>أنت:</strong> ${message}</div>`;
+        chat.innerHTML += `<div><em>جارٍ انتظار الرد...</em></div>`;
+
+        try {
+            const response = await fetch('https://laila808.github.io/laila-ai', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: message })
+            });
+            
+            if (!response.ok) {
+                throw new Error('شبكة غير مستقرة، حاول مرة أخرى.');
+            }
+
+            const data = await response.json();
+            chat.innerHTML += `<div><strong>المساعد:</strong> ${data.answer}</div>`;
+        } catch (error) {
+            chat.innerHTML += `<div><strong>خطأ:</strong> ${error.message}</div>`;
+        }
+        input.value = '';
+    }
+
+    function clearChat() {
+        const chat = document.getElementById('chat');
+        chat.innerHTML = ''; // مسح المحادثة
+    }
+</script>
